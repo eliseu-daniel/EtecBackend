@@ -59,7 +59,7 @@ app.delete('/adm/:id', async(req, res, next) => {
 
 
 
-//Mostrar cliente
+//Mostrar Todos cliente
 app.get('/cliente', async (req,res,next) => {
     try{
         const users = await bd.allCli()
@@ -82,8 +82,8 @@ app.get('/cliente/:id', async (req,res,next) => {
 //Criar cliente
 app.post('/cliente', async(req, res, next) => {
     try{
-        const {nome, senha, email, fone} = req.body
-        const users = await bd.createCli(nome, senha, email, fone)
+        const {nome, fone, email, senha} = req.body
+        const users = await bd.createCli(nome, fone, email, senha)
         res.json(users)
     }catch(error){
         res.status(500).json({error: error.message})
@@ -93,8 +93,8 @@ app.post('/cliente', async(req, res, next) => {
 //Atualizar cliente
 app.put('/cliente/:id', async(req, res, next) => {
     try {
-        const {nome, senha, email, fone} = req.body
-        const users = await bd.updateCli(req.params.id, nome, senha, email,fone)
+        const {nome, fone, email, senha} = req.body
+        const users = await bd.updateCli(req.params.id, nome, fone, email, senha)
         res.json(users)
     } catch (error) {
         res.status(500).json({error: error.message})
