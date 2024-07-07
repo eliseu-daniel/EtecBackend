@@ -5,6 +5,19 @@ const bd = require('./config/database')
 
 app.use(express.json())
 
+//Login
+app.post('/login', async(req, res, next) => {
+    try{
+        const {email, senha} = req.body
+        const users = await bd.getLogin(email, senha)
+        res.json(users)
+    }catch(error){
+        res.status(500).json({error: error.message})
+    }
+})
+
+
+
 //Mostrar todos
 app.get('/adm', async (req,res,next) => {
     try{

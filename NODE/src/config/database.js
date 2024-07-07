@@ -4,6 +4,22 @@ const {pool} = require('./config')
 
 dotenv.config()
 
+async function getLogin(user, pw){
+    const sqlEmail = 'SELECT emailAdm FROM administrador WHERE emailAdm= ?'
+    const [userEmail] = await pool.execute(sqlEmail, [user])
+    if(userEmail.length === 0){
+        return "Usuário não cadastrado"
+    }
+    const sqlPw = 'SELECT emailAdm, senhaAdm FROM administrador WHERE emailAdm= ? AND senhaAdm= ?'
+    const [Pw] = await pool.execute(sqlPw, [user, pw])
+    if(Pw.length === 0){
+        return "Senha Incorreta"
+    }
+
+    return true
+}
+
+
 async function allAdm(){
     const [sql] = await pool.execute('SELECT * FROM administrador')
     return sql
@@ -17,7 +33,7 @@ async function showAdm(idAdm){
 async function createAdm(nome, senha, email, fone) {
     const sql = 'INSERT INTO administrador (nomeAdm, senhaAdm, emailAdm, foneAdm) VALUES (?, ?, ?, ?)'
     const {params} = await pool.execute(sql, [nome, senha, email, fone])
-    return {id: params.insertid, nome}
+    return {nome, senha, email, fone}
 }
 
 async function updateAdm(idAdm, nome, senha, email, fone) {
@@ -28,7 +44,7 @@ async function updateAdm(idAdm, nome, senha, email, fone) {
 
 async function deleteAdm(idAdm){
     const [sql] = await pool.execute('DELETE FROM administrador WHERE idAdm= ?', [idAdm])
-    return sql[0]
+    return idAdm
 }
 
 //Clientes
@@ -62,4 +78,7 @@ async function deleteCli(idCli){
 
 
 
-module.exports = {showAdm, allAdm, createAdm, updateAdm, deleteAdm, showCli, allCli, createCli, updateCli, deleteCli}
+module.exports = {showAdm, allAdm, createAdm, updateAdm, deleteAdm,
+     showCli, allCli, createCli, updateCli, deleteCli,
+    getLogin
+    }
