@@ -2,6 +2,7 @@ const porta = 3003
 const express = require('express')
 const app = express()
 const bd = require('./config/database')
+const { parseISO, format } = require('date-fns')
 
 app.use(express.json())
 
@@ -124,6 +125,63 @@ app.delete('/cliente/:id', async(req, res, next) => {
     }
 })
 
+
+
+//Mostrar Todos Pedidos
+app.get('/pedido', async (req,res,next) => {
+    try{
+        const users = await bd.allPed()
+        res.json(users)
+    }catch(error){
+        res.status(500).json({error: error.message})
+    }
+})
+
+//Mostrar Pedidos
+app.get('/pedido/:id', async (req,res,next) => {
+    try{
+        const users = await bd.showPed(req.params.id)
+        res.json(users)
+    }catch(error){
+        res.status(500).json({error: error.message})
+    }
+})
+
+//Criar Pedidos
+app.post('/pedido', async(req, res, next) => {
+    try{
+        const {dataHora, status, idCliente} = req.body
+        const parsedDate = parseISO(dataHora)
+        const formattedDate = format(parsedDate, 'yyyy-MM-dd HH:mm:ss')
+        const users = await bd.createPed(formattedDate, status, idCliente)
+        res.json(users)
+    }catch(error){
+        res.status(500).json({error: error.message})
+    }
+})
+
+//Atualizar Pedidos
+app.put('/pedido/:id', async(req, res, next) => {
+    try {
+        const {dataHora, status, idCliente} = req.body
+        const parsedDate = parseISO(dataHora)
+        const formattedDate = format(parsedDate, 'yyyy-MM-dd HH:mm:ss')
+        const users = await bd.updatePed(req.params.id, formattedDate, status, idCliente)
+        res.json(users)
+    } catch (error) {
+        res.status(500).json({error: error.message})
+    }
+})
+
+//Deletar Pedidos
+app.delete('/pedido/:id', async(req, res, next) => {
+    try {
+        const users = await bd.deletePed(req.params.id)
+        res.json(users)
+    } catch (error) {
+        res.status(500).json({error: error.message})
+    }
+})
 
 app.listen(porta, () => {
     console.log(`Servidor executando na porta ${porta}`)

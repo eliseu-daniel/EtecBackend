@@ -75,10 +75,39 @@ async function deleteCli(idCli){
     return idCli
 }
 
+//Pedidos
+async function allPed(){
+    const [sql] = await pool.execute(
+        'SELECT pedido.idPedido, pedido.dataHora, pedido.statusPedido, cliente.nomeCliente FROM pedido INNER JOIN cliente ON pedido.idCliente = cliente.idCliente'
+    )
+    return sql
+}
 
+async function showPed(idPed){
+    const [sql] = await pool.execute('SELECT pedido.idPedido, pedido.dataHora, pedido.statusPedido, cliente.nomeCliente FROM pedido INNER JOIN cliente ON pedido.idCliente = cliente.idCliente WHERE idPedido= ?', [idPed])
+    return sql[0]
+}
+
+async function createPed(dataHora, status, idCliente) {
+    const sql = 'INSERT INTO pedido (dataHora, statusPedido, idCliente) VALUES (?, ?, ?)'
+    const {params} = await pool.execute(sql, [dataHora, status, idCliente])
+    return {dataHora, status, idCliente}
+}
+
+async function updatePed(idPed, dataHora, status, idCliente) {
+    const sql = 'UPDATE pedido SET dataHora= ?, statusPedido= ?, idCliente= ? WHERE idPedido= ?'
+    const {params} = await pool.execute(sql, [dataHora, status, idCliente, idPed])
+    return {idPed, dataHora, status, idCliente}
+}
+
+async function deletePed(idPed){
+    const [sql] = await pool.execute('DELETE FROM pedido WHERE idPedido= ?', [idPed])
+    return idPed
+}
 
 
 module.exports = {showAdm, allAdm, createAdm, updateAdm, deleteAdm,
      showCli, allCli, createCli, updateCli, deleteCli,
-    getLogin
+    getLogin,
+    showPed, allPed, createPed, updatePed, deletePed,
     }
