@@ -131,6 +131,12 @@ app.delete('/cliente/:id', async(req, res, next) => {
 app.get('/pedido', async (req,res,next) => {
     try{
         const users = await bd.allPed()
+        users.forEach(pedido => {
+            const dateIsoString = pedido.dataHora instanceof Date 
+            ? pedido.dataHora.toISOString() 
+            : pedido.dataHora
+            pedido.dataHora = format(parseISO(dateIsoString), 'yyyy-MM-dd HH:mm:ss')
+        })
         res.json(users)
     }catch(error){
         res.status(500).json({error: error.message})
@@ -141,6 +147,10 @@ app.get('/pedido', async (req,res,next) => {
 app.get('/pedido/:id', async (req,res,next) => {
     try{
         const users = await bd.showPed(req.params.id)
+        const dateIsoString = users.dataHora instanceof Date 
+            ? users.dataHora.toISOString() 
+            : users.dataHora
+        users.dataHora = format(parseISO(dateIsoString), 'yyyy-MM-dd HH:mm:ss')
         res.json(users)
     }catch(error){
         res.status(500).json({error: error.message})
@@ -178,6 +188,60 @@ app.delete('/pedido/:id', async(req, res, next) => {
     try {
         const users = await bd.deletePed(req.params.id)
         res.json(users)
+    } catch (error) {
+        res.status(500).json({error: error.message})
+    }
+})
+
+
+
+//Mostrar Todos item
+app.get('/item', async (req,res,next) => {
+    try{
+        const items = await bd.allItem()
+        res.json(items)
+    }catch(error){
+        res.status(500).json({error: error.message})
+    }
+})
+
+//Mostrar item
+app.get('/item/:id', async (req,res,next) => {
+    try{
+        const items = await bd.showItem(req.params.id)
+        res.json(items)
+    }catch(error){
+        res.status(500).json({error: error.message})
+    }
+})
+
+//Criar item
+app.post('/item', async(req, res, next) => {
+    try{
+        const {idPedido, descricao, qtd, precoUn, nomeItem} = req.body
+        const items = await bd.createItem(idPedido, descricao, qtd, precoUn, nomeItem)
+        res.json(items)
+    }catch(error){
+        res.status(500).json({error: error.message})
+    }
+})
+
+//Atualizar item
+app.put('/item/:id', async(req, res, next) => {
+    try {
+        const {idPedido, descricao, qtd, precoUn, nomeItem} = req.body
+        const items = await bd.updateItem(req.params.id, idPedido, descricao, qtd, precoUn, nomeItem)
+        res.json(items)
+    } catch (error) {
+        res.status(500).json({error: error.message})
+    }
+})
+
+//Deletar item
+app.delete('/item/:id', async(req, res, next) => {
+    try {
+        const items = await bd.deleteItem(req.params.id)
+        res.json(items)
     } catch (error) {
         res.status(500).json({error: error.message})
     }

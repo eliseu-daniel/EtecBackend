@@ -106,8 +106,39 @@ async function deletePed(idPed){
 }
 
 
+//Item
+async function allItem(){
+    const [sql] = await pool.execute(
+        'SELECT itempedido.idItem, itempedido.idPedido, itempedido.descricao, itempedido.quantidade, itempedido.precoUnitario, itempedido.nomeItem FROM itempedido INNER JOIN pedido ON itempedido.idPedido = pedido.idPedido'
+    )
+    return sql
+}
+
+async function showItem(idItem){
+    const [sql] = await pool.execute('SELECT itempedido.idItem, itempedido.idPedido, itempedido.descricao, itempedido.quantidade, itempedido.precoUnitario, itempedido.nomeItem FROM itempedido INNER JOIN pedido ON itempedido.idPedido = pedido.idPedido WHERE idItem= ?', [idItem])
+    return sql[0]
+}
+
+async function createItem(idPedido, descricao, qtd, precoUn, nomeItem) {
+    const sql = 'INSERT INTO itempedido (idPedido, descricao, quantidade, precoUnitario, nomeItem) VALUES (?, ?, ?, ?, ?)'
+    const {params} = await pool.execute(sql, [idPedido, descricao, qtd, precoUn, nomeItem])
+    return {idPedido, descricao, qtd, precoUn, nomeItem}
+}
+
+async function updateItem( idItem, idPedido, descricao, qtd, precoUn, nomeItem) {
+    const sql = 'UPDATE itempedido SET idPedido= ?, descricao= ?, quantidade= ?, precoUnitario= ?, nomeItem= ? WHERE idItem= ?'
+    const {params} = await pool.execute(sql, [idPedido, descricao, qtd, precoUn, nomeItem, idItem])
+    return { idItem, idPedido, descricao, qtd, precoUn, nomeItem}
+}
+
+async function deleteItem(idItem){
+    const [sql] = await pool.execute('DELETE FROM itempedido WHERE idItem= ?', [idItem])
+    return idItem
+}
+
 module.exports = {showAdm, allAdm, createAdm, updateAdm, deleteAdm,
      showCli, allCli, createCli, updateCli, deleteCli,
     getLogin,
     showPed, allPed, createPed, updatePed, deletePed,
+    showItem, allItem, createItem, updateItem, deleteItem,
     }
