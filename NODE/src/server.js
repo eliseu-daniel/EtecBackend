@@ -3,8 +3,11 @@ const express = require('express')
 const app = express()
 const bd = require('./config/database')
 const { parseISO, format } = require('date-fns')
+const cors = require('cors');
 
 app.use(express.json())
+
+app.use(cors());
 
 //Login
 app.post('/login', async(req, res, next) => {
